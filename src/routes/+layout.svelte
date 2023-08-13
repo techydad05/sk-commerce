@@ -14,6 +14,10 @@
   let cartCreatedAt;
   let cartItems = [];
 
+  export let data;
+  const collections = data.collections;
+  // console.log(collections);
+
   let theme = null;
   
   onMount(async () => {
@@ -115,7 +119,7 @@
       bind:loading
     />
   {/if} -->
-  <MedusaHeader bind:new_theme={theme}/>
+  <MedusaHeader menuItems={collections} bind:new_theme={theme}/>
   <!-- <Header on:openCart={openCart} /> -->
   <div class="min-h-screen overflow-scroll pt-[88px]">
     <slot />

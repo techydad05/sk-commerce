@@ -1,4 +1,5 @@
 import Medusa from "@medusajs/medusa-js";
+import { collections } from "$lib/store";
 let baseUrl = "http://192.168.1.42:9002";
 const medusa = new Medusa({ baseUrl: baseUrl, maxRetries: 3 });
 
@@ -8,6 +9,12 @@ export async function createMedusaCart() {
   })
 }
 
+export const getCollections = async () => {
+  return medusa.collections.list().then((res) => {
+    collections.set(res.collections);
+    return res;
+  });
+}
 
 // export async function shopifyFetch({ query, variables }) {
 //   const endpoint =

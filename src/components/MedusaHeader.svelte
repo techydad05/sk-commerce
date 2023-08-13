@@ -42,10 +42,10 @@
   let showMenu = false;
   let showThemeChange = false;
 
-  // export let menuItems;
-  // $: menuItems = menuItems.sort(function (a, b) {
-  //   return a.title.localeCompare(b.title);
-  // });
+  export let menuItems;
+  $: menuItems = menuItems.sort(function (a, b) {
+    return a.title.localeCompare(b.title);
+  });
   $: currentRoute = $page.url.pathname;
 
   // let cartTotal = 0;
@@ -277,7 +277,7 @@
               style="border-radius: 0 !important;">All</a
             >
           </li>
-          <!-- {#each menuItems as tab}
+          {#each menuItems as tab}
             <li on:click={() => (showMenu = false)}>
               <a
                 data-sveltekit-prefetch
@@ -288,7 +288,7 @@
                 style="border-radius: 0 !important;">{tab.title}</a
               >
             </li>
-          {/each} -->
+          {/each}
           <li class="mt-4 grid grid-rows-2 text-center">
             <h1 class="hover:bg-base-100 text-center text-2xl">Check us out on social media!</h1>
             <!-- svelte-ignore a11y-invalid-attribute -->
