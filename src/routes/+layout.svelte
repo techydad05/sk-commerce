@@ -8,7 +8,6 @@
   import { getCartItems } from '../store';
   import { onMount } from 'svelte';
   import { createMedusaCart } from '$utils/medusa';
-  import { lineItems } from '$lib/store';
 
   let cartId;
   let checkoutUrl;
@@ -20,17 +19,17 @@
   onMount(async () => {
     if (typeof window !== 'undefined') {
       theme = localStorage.getItem('theme');
-      cartId = JSON.parse(localStorage.getItem('cartId'));
-      cartCreatedAt = JSON.parse(localStorage.getItem('cartCreatedAt'));
-      checkoutUrl = JSON.parse(localStorage.getItem('cartUrl'));
+      // cartId = JSON.parse(localStorage.getItem('cartId'));
+      // cartCreatedAt = JSON.parse(localStorage.getItem('cartCreatedAt'));
+      // checkoutUrl = JSON.parse(localStorage.getItem('cartUrl'));
 
-      let currentDate = Date.now();
-      let difference = currentDate - cartCreatedAt;
-      let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
-      let cartIdExpired = totalDays > 6;
-      if (cartId === 'undefined' || cartId === 'null' || cartIdExpired) {
-        await callCreateCart();
-      }
+      // let currentDate = Date.now();
+      // let difference = currentDate - cartCreatedAt;
+      // let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
+      // let cartIdExpired = totalDays > 6;
+      // if (cartId === 'undefined' || cartId === 'null' || cartIdExpired) {
+      //   await callCreateCart();
+      // }
       // await loadCart();
       document.addEventListener('keydown', (e) => {
         let keyCode = e.keyCode;
@@ -42,9 +41,9 @@
   });
 
   async function callCreateCart() {
-    const cartRes = await createMedusaCart();
-    console.log("cartRes:", cartRes);
-    lineItems.set(cartRes.items);
+    // const cartRes = await createMedusaCart();
+    // console.log("cartRes:", cartRes);
+    // lineItems.set(cartRes.items);
     // if (typeof window !== 'undefined') {
     //   localStorage.setItem('cartCreatedAt', Date.now());
     //   localStorage.setItem('cartId', JSON.stringify(cartRes.body?.data?.cartCreate?.cart?.id));
@@ -119,7 +118,6 @@
   <MedusaHeader bind:new_theme={theme}/>
   <!-- <Header on:openCart={openCart} /> -->
   <div class="min-h-screen overflow-scroll pt-[88px]">
-    {$lineItems}
     <slot />
     <Footer />
   </div>
