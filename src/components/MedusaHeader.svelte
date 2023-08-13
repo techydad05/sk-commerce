@@ -43,7 +43,7 @@
   let showThemeChange = false;
 
   export let menuItems;
-  $: menuItems = menuItems.sort(function (a, b) {
+  $: menuItems = menuItems?.sort(function (a, b) {
     return a.title.localeCompare(b.title);
   });
   $: currentRoute = $page.url.pathname;

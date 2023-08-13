@@ -44,20 +44,6 @@
     }
   });
 
-  async function callCreateCart() {
-    // const cartRes = await createMedusaCart();
-    // console.log("cartRes:", cartRes);
-    // lineItems.set(cartRes.items);
-    // if (typeof window !== 'undefined') {
-    //   localStorage.setItem('cartCreatedAt', Date.now());
-    //   localStorage.setItem('cartId', JSON.stringify(cartRes.body?.data?.cartCreate?.cart?.id));
-    //   localStorage.setItem(
-    //     'cartUrl',
-    //     JSON.stringify(cartRes.body?.data?.cartCreate?.cart?.checkoutUrl)
-    //   );
-    // }
-  }
-
   async function loadCart() {
     const res = await getCartItems();
     cartItems = res?.body?.data?.cart?.lines?.edges;
