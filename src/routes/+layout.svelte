@@ -8,6 +8,7 @@
   import { getCartItems } from '../store';
   import { onMount } from 'svelte';
   import { createMedusaCart } from '$utils/medusa';
+  import { lineItems } from '$lib/store';
 
   let cartId;
   let checkoutUrl;
@@ -16,17 +17,26 @@
 
   export let data;
   const collections = data.collections;
-  // console.log(collections);
 
   let theme = null;
-  
+
   onMount(async () => {
+    theme = localStorage.getItem('theme');
+
     if (typeof window !== 'undefined') {
-      theme = localStorage.getItem('theme');
+      let localLineItems = JSON.parse(localStorage.getItem('lineitems'));
+      if (localLineItems) {
+        lineItems.set(localLineItems);
+        console.log('local lineitems found lineitems set!', $lineItems);
+      } else {
+        console.log('no local lineitems');
+      }
+    }
+
+    // if (typeof window !== 'undefined') {
       // cartId = JSON.parse(localStorage.getItem('cartId'));
       // cartCreatedAt = JSON.parse(localStorage.getItem('cartCreatedAt'));
       // checkoutUrl = JSON.parse(localStorage.getItem('cartUrl'));
-
       // let currentDate = Date.now();
       // let difference = currentDate - cartCreatedAt;
       // let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
@@ -35,13 +45,13 @@
       //   await callCreateCart();
       // }
       // await loadCart();
-      document.addEventListener('keydown', (e) => {
-        let keyCode = e.keyCode;
-        if (keyCode === 27) {
-          showCart = false;
-        }
-      });
-    }
+      // document.addEventListener('keydown', (e) => {
+      //   let keyCode = e.keyCode;
+      //   if (keyCode === 27) {
+      //     showCart = false;
+      //   }
+      // });
+    // }
   });
 
   async function loadCart() {
@@ -91,10 +101,12 @@
     await loadCart();
     loading = false;
   }
-
 </script>
 
-<main  data-theme={theme ?? 'dark'}  class={`${showCart ? 'h-screen' : 'min-h-screen'} text-white overflow-hidden`}>
+<main
+  data-theme={theme ?? 'dark'}
+  class={`${showCart ? 'h-screen' : 'min-h-screen'} overflow-hidden text-white`}
+>
   <!-- {#if showCart}
     <ShoppingCart
       items={cartItems}
@@ -105,7 +117,7 @@
       bind:loading
     />
   {/if} -->
-  <MedusaHeader menuItems={collections} bind:new_theme={theme}/>
+  <MedusaHeader menuItems={collections} bind:new_theme={theme} />
   <!-- <Header on:openCart={openCart} /> -->
   <div class="min-h-screen overflow-scroll pt-[88px]">
     <slot />

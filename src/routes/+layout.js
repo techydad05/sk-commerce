@@ -3,13 +3,11 @@ import { browser } from '$app/environment';
 import { getCollections } from '$utils/medusa.js';
 export async function load({ fetch }) {
     if (browser) {
-        const lineItems = localStorage.getItem('lineitems') || [];
-        const response = await fetch('/medusacart.json', { method: 'POST', body: JSON.stringify(lineItems) });
+        const cartID = localStorage.getItem('cartID');
+        const response = await fetch('/medusacart.json', { method: 'POST', body: JSON.stringify(cartID) });
         const responseData = await response.json();
         console.log("response:", responseData);
-        await getCollections().then(res => {
-            responseData.collections = res.collections;
-        });
+        localStorage.setItem('cartID', responseData.cart.id);
         return responseData;
     } 
 }

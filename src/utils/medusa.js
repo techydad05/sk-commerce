@@ -3,16 +3,27 @@ import { collections } from "$lib/store";
 let baseUrl = "http://192.168.1.42:9002";
 const medusa = new Medusa({ baseUrl: baseUrl, maxRetries: 3 });
 
-export async function createMedusaCart() {
-  return await medusa.carts.create().then((res) => {
-    return res.cart;
-  })
+export async function createMedusaCart(cartID) {
+  const { regions } = await medusa.regions.list();
+  const region = regions.find(v => v.name === 'NA');
+  if (!region) {
+    console.log("No region found using default..");
+  }
+  if (cartID) {
+    return await medusa.carts.retrieve(cartID).then((res) => {
+      return res.cart;
+    })
+  } else {
+    return await medusa.carts.create({region_id: region?.id}).then((res) => {
+      return res.cart;
+    })
+  }
 }
 
 export const getCollections = async () => {
   return medusa.collections.list().then((res) => {
     collections.set(res.collections);
-    return res;
+    return res.collections;
   });
 }
 
