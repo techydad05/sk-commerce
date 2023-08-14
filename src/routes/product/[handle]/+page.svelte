@@ -2,191 +2,193 @@
   import GridTile from '$components/GridTile.svelte';
   import DescriptionToggle from '$components/DescriptionToggle.svelte';
   import Icons from '$components/Icons.svelte';
-  import { getCartItems } from '../../../store.js';
+  import { lineItems, origCartStr } from '$lib/store';
+  import { browser } from '$app/environment';
 
   /** @type {import('./$types').PageData} */
   export let data;
+  const { pageData } = data;
+  const product = pageData.product;
+  const featuredProducts = pageData.featuredProducts;
 
   let selectedOptions = {};
   let cartLoading = false;
   let currentImageIndex = 0;
+  let quantity = 1;
 
-  $: highlightedImageSrc = data?.body?.product?.images?.edges[currentImageIndex]?.node?.originalSrc;
+  $: highlightedImageSrc = product?.images[currentImageIndex].url;
 
-  data?.body?.product?.options.forEach((option) => {
+  product?.options.forEach((option) => {
     selectedOptions = { ...selectedOptions, [option.name]: option.values[0] };
   });
 
   function changeHighlightedImage(direction) {
     if (direction === 'next') {
-      if (currentImageIndex + 1 < data?.body?.product?.images?.edges.length) {
+      if (currentImageIndex + 1 < product?.images?.length) {
         currentImageIndex = currentImageIndex + 1;
       } else {
         currentImageIndex = 0;
       }
     } else {
       if (currentImageIndex === 0) {
-        currentImageIndex = data?.body?.product?.images?.edges.length - 1;
+        currentImageIndex = product?.images?.length - 1;
       } else {
         currentImageIndex = currentImageIndex - 1;
       }
     }
   }
 
-  async function addToCart() {
-    cartLoading = true;
-    let variantId;
-    let cartId;
-
-    if (typeof window !== 'undefined') {
-      cartId = JSON.parse(localStorage.getItem('cartId'));
-    }
-
-    data.body.product.variants.edges.forEach((variant) => {
-      let result = variant.node.selectedOptions.every((option) => {
-        return selectedOptions[option.name] === option.value;
-      });
-      if (result) {
-        variantId = variant.node.id;
+  const addToCart = (item, quantity) => {
+    $lineItems = [
+      ...$lineItems,
+      {
+        id: item.variants[0].id,
+        title: item.title,
+        amount: item.variants[0].prices[0].amount,
+        quantity,
+        thumbnail: item.thumbnail,
+        subtotal: item.variants[0].prices[0].amount * quantity
       }
-    });
-
-    await fetch('/cart.json', {
-      method: 'PATCH',
-      body: JSON.stringify({ cartId: cartId, variantId: variantId })
-    });
-    // Wait for the API to finish before updating cart items
-    await getCartItems();
-
-    cartLoading = false;
-  }
+    ];
+    localStorage.setItem('lineitems', JSON.stringify($lineItems));
+    origCartStr.set(JSON.stringify($lineItems));
+  };
 </script>
 
 <svelte:head>
-  <title>{data.body.product.title}</title>
+  <title>{product.title}</title>
 </svelte:head>
 
 <div>
-  {#if data.body.product}
-    <div class="flex flex-col md:flex-row">
-      <div class="md:h-90 md:w-2/3">
+  {#if pageData.product}
+    <div class="grid min-h-[calc(100vh-80px)] md:grid-cols-[2.5fr,1.5fr]">
+      <div>
         {#key highlightedImageSrc}
-          <div class="relative h-4/5 bg-light">
+          <div class="bg-light relative h-4/5">
             <GridTile
-              title={data.body.product.title}
-              price={data.body.product.priceRange.maxVariantPrice.amount}
-              currencyCode={data.body.product.priceRange.maxVariantPrice.currencyCode}
+              title={product.title}
+              price={(product.variants[0].prices[0].amount / 100).toFixed(2)}
+              currencyCode={product.variants[0].prices[0].currency_code.toUpperCase()}
               imageSrc={highlightedImageSrc}
             />
-            {#if data.body.product?.images?.edges.length > 1}
+            {#if product?.images?.length > 1}
               <div class="absolute right-0 bottom-0 z-40 p-6 ">
                 <button
                   on:click={() => {
                     changeHighlightedImage('back');
                   }}
-                  class="border border-b border-t border-l border-black py-4 px-8"
-                  ><Icons type="arrowLeft" /></button
+                  class="btn btn-primary"><Icons type="arrowLeft" /></button
                 >
                 <button
                   on:click={() => {
                     changeHighlightedImage('next');
                   }}
-                  class="-ml-1 border border-black py-4 px-8"><Icons type="arrowRight" /></button
+                  class="btn btn-primary"><Icons type="arrowRight" /></button
                 >
               </div>
             {/if}
           </div>
         {/key}
         <div class="flex h-1/5 ">
-          {#each data.body.product.images.edges as variant, i}
+          {#each pageData.product.images as variant, i}
             <div
               on:click={() => {
                 currentImageIndex = i;
               }}
               class="h-full w-1/4 bg-white"
             >
-              <GridTile imageSrc={variant.node.originalSrc} removeLabels={true} />
+              <GridTile imageSrc={variant.url} removeLabels={true} />
             </div>
           {/each}
         </div>
       </div>
-      <div class="h-full p-6 md:w-1/3">
-        {#each data.body.product.options as option}
-          <div class="mb-8">
-            <div class="mb-4 text-sm uppercase tracking-wide">{option.name}</div>
-            <div class="flex">
-              {#each option.values as value}
-                <button
-                  on:click={() => {
-                    selectedOptions = { ...selectedOptions, [option.name]: value };
-                  }}
-                  class={`${value.length <= 3 ? 'w-12' : 'px-2'} ${
-                    selectedOptions[option.name] === value ? 'opacity-100' : 'opacity-60'
-                  } transition duration-300 ease-in-out hover:scale-110 hover:opacity-100 border-white h-12 mr-3 flex items-center justify-center rounded-full border`}
-                >
-                  {value}
-                </button>
-              {/each}
+      <div>
+        <div class="h-full p-6 md:w-1/3">
+          {#each product.options as option}
+            <div class="mb-8">
+              <div class="mb-4 text-sm uppercase tracking-wide">{option.title}</div>
+              <div class="flex">
+                {#each option.values as value}
+                  <button
+                    on:click={() => {
+                      selectedOptions = { ...selectedOptions, [option.value]: value };
+                      product.id = value.variant_id;
+                      
+                    }}
+                    class={`${value.length <= 3 ? 'w-12' : 'px-6'} ${
+                      selectedOptions[option.value] === value ? 'btn-primary' : 'btn-primary-accent'
+                    } btn btn-lg mx-1`}
+                  >
+                    {value.value}
+                  </button>
+                {/each}
+              </div>
             </div>
+          {/each}
+          <p class="text-sm">{product.description}</p>
+          <div class="mt-8 flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="mr-1">
+                <Icons type="star" />
+              </div>
+              <div class="mr-1">
+                <Icons type="star" />
+              </div>
+              <div class="mr-1">
+                <Icons type="star" />
+              </div>
+              <div class="mr-1">
+                <Icons type="star" />
+              </div>
+              <div class="mr-1 opacity-50">
+                <Icons type="star" />
+              </div>
+            </div>
+            <div class="text-sm opacity-50">36 Reviews **make this work</div>
           </div>
-        {/each}
-        <p class="text-sm">{data.body.product.description}</p>
-        <div class="mt-8 flex items-center justify-between">
-          <div class="flex items-center">
-            <div class="mr-1">
-              <Icons type="star" />
-            </div>
-            <div class="mr-1">
-              <Icons type="star" />
-            </div>
-            <div class="mr-1">
-              <Icons type="star" />
-            </div>
-            <div class="mr-1">
-              <Icons type="star" />
-            </div>
-            <div class="mr-1 opacity-50">
-              <Icons type="star" />
-            </div>
-          </div>
-          <div class="text-sm opacity-50">36 Reviews</div>
-        </div>
-        <button
-          on:click={addToCart}
-          class="mt-6 flex w-full items-center justify-center bg-light p-4 text-sm uppercase tracking-wide text-black opacity-90 hover:opacity-100"
-        >
-          <span>Add To Cart</span>
-          {#if cartLoading}
-            <div class="lds-ring ml-4">
-              <div />
-              <div />
-              <div />
-              <div />
-            </div>
+          <input
+            value={quantity}
+            class="input input-primary mt-4"
+            type="number"
+            on:change={(e) => (quantity = e.target.value)}
+          />
+          <button
+            on:click={() => addToCart(product, quantity)}
+            class="bg-light mt-6 flex w-full items-center justify-center p-4 text-sm uppercase tracking-wide text-black opacity-90 hover:opacity-100"
+          >
+            <span>Add To Cart</span>
+            {#if cartLoading}
+              <div class="lds-ring ml-4">
+                <div />
+                <div />
+                <div />
+                <div />
+              </div>
+            {/if}
+          </button>
+          {#if product.metadata}
+            {#each Object.entries(product.metadata) as metadata}
+              <DescriptionToggle
+                title={metadata[0].charAt(0).toUpperCase() + metadata[0].slice(1)}
+                description={metadata[1]}
+              />
+            {/each}
           {/if}
-        </button>
-        <DescriptionToggle
-          title="Care"
-          description="This is a limited edition production run. Printing starts when the drop ends."
-        />
-        <DescriptionToggle
-          title="Details"
-          description="This is a limited edition production run. Printing starts when the drop ends. Reminder: Bad Boys For Life. Shipping may take 10+ days due to COVID-19."
-        />
+        </div>
       </div>
     </div>
     <div class="px-4 py-8">
       <div class="mb-4 text-3xl font-bold">Related Products</div>
       <ul class="grid grid-flow-row grid-cols-2 gap-4 md:grid-cols-4">
-        {#each data.body.featuredProducts as product, i (product.node.id)}
+        {#each featuredProducts as product, i (product.id)}
           <li>
             <div
               class="group relative block aspect-square overflow-hidden border border-white/20 bg-zinc-800/50"
             >
               <GridTile
                 removeLabels={true}
-                imageSrc={product.node.images.edges[0].node.originalSrc}
-                href={`/product/${product.node.handle}`}
+                imageSrc={product.images[0].url}
+                href={`/product/${product.handle}`}
               />
             </div>
           </li>

@@ -1,5 +1,5 @@
 import Medusa from "@medusajs/medusa-js";
-import { collections } from "$lib/store";
+import { collections, productTags, productsByTag } from "$lib/store";
 let baseUrl = "http://192.168.1.42:9002";
 const medusa = new Medusa({ baseUrl: baseUrl, maxRetries: 3 });
 
@@ -24,6 +24,48 @@ export const getCollections = async () => {
   return medusa.collections.list().then((res) => {
     collections.set(res.collections);
     return res.collections;
+  });
+}
+
+export const getCollectionProducts = async (collection) => {
+  const { collections } = await medusa.collections.list();
+  let id = "";
+  collections.forEach(col => {
+    col.handle.includes(collection) ? id = col.id : null;
+  });
+  return medusa.products.list({ collection_id: [id] }).then((res) => {
+    collectionProducts.set(res.products);
+    return res;
+  });
+}
+
+export const getProductByHandle = async (handle) => {
+  return medusa.products.list({ handle: handle }).then((res) => res)
+}
+
+export const getProductsByTag = async (searchTags) => {
+  let tagArr = await getProductTags();
+  searchTags = searchTags.split(',');
+  let filteredTags = [];
+  (tagArr).forEach(tag => {
+    if (searchTags.includes(tag.value)) {
+      filteredTags.push(tag.id)
+    }
+  });
+  return medusa.products.list({ tags: filteredTags }).then((res) => {
+    productsByTag.set(res.products);
+    return res;
+  })
+};
+
+export const getProductTags = async () => {
+  return medusa.productTags.list().then((res) => {
+    const tagArr = [];
+    res.product_tags.forEach(({ id, value }) => {
+      tagArr.push({ id, value });
+    });
+    productTags.set(tagArr);
+    return tagArr;
   });
 }
 

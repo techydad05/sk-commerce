@@ -1,25 +1,26 @@
-import { getProduct, getAllProducts } from '$utils/shopify';
+// import { getProduct, getAllProducts } from '$utils/shopify';
+import { getProductByHandle, getProductsByTag } from '$utils/medusa';
 import { error } from '@sveltejs/kit';
 
 export async function load({ params }) {
-  const [resOne, resTwo] = await Promise.all([getProduct(params.handle), getAllProducts()]);
-
-  if (resOne.status === 200 && resTwo.status === 200) {
-    const product = resOne.body?.data?.productByHandle;
-    const featuredProducts = resTwo.body?.data?.products.edges.slice(0, 4);
+  const resOne = await getProductByHandle(params.handle);
+  const resTwo = await getProductsByTag("featured");
+  if (resOne.response.status === 200 && resTwo.response.status === 200) {
+    const product = resOne.products[0]
+    const featuredProducts = resTwo.products;
 
     if (product) {
       return {
-        body: {
+        pageData: {
           product,
-          featuredProducts
+          featuredProducts,
         }
       };
     }
 
     throw error(404)
   } else {
-    let status = resOne.status !== 200 ? resOne.status : resTwo.status
+    let status = resOne.response.status !== 200 ? resOne.response.status : resTwo.response.status
     throw error(status)
   }
 }
