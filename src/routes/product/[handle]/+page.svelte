@@ -39,7 +39,21 @@
     }
   }
 
+  const addItemWithQuantity = (newItem) => {
+    const existingItem = $lineItems.find((item) => item.id === newItem.id);
+
+    if (existingItem) {
+      existingItem.quantity += newItem.quantity;
+    } else {
+      $lineItems.push(newItem);
+    }
+
+    return $lineItems;
+  };
+
   const addToCart = (item, quantity) => {
+    // const testArr = addItemWithQuantity(item);
+    // console.log(testArr);
     $lineItems = [
       ...$lineItems,
       {
@@ -51,9 +65,10 @@
         subtotal: item.variants[0].prices[0].amount * quantity
       }
     ];
+
     localStorage.setItem('lineitems', JSON.stringify($lineItems));
     origCartStr.set(JSON.stringify($lineItems));
-    notifications.success('Item added to cart!', 3000)
+    notifications.success('Item added to cart!', 3000);
   };
 </script>
 
@@ -115,7 +130,6 @@
                     on:click={() => {
                       selectedOptions = { ...selectedOptions, [option.value]: value };
                       product.id = value.variant_id;
-                      
                     }}
                     class={`${value.length <= 3 ? 'w-12' : 'px-6'} ${
                       selectedOptions[option.value] === value ? 'btn-primary' : 'btn-primary-accent'

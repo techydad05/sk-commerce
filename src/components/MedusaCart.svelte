@@ -1,4 +1,17 @@
 <script>
+  import {
+    backInOut,
+    backOut,
+    bounceInOut,
+    bounceOut,
+    circInOut,
+    circOut,
+    cubicIn,
+    cubicInOut,
+    elasticInOut,
+    elasticOut
+  } from 'svelte/easing';
+  import { fly } from 'svelte/transition';
   import { lineItems, origCartStr } from '$lib/store';
   import { browser } from '$app/environment';
   import { notifications } from '$utils/notifications';
@@ -6,7 +19,10 @@
   let cartTotal = 0;
   $: {
     if ($lineItems.length > 0) {
-      cartTotal = ($lineItems.reduce((accumulator, item) => accumulator + item.subtotal * item.quantity, 0)/100).toFixed(2);
+      cartTotal = (
+        $lineItems.reduce((accumulator, item) => accumulator + item.subtotal * item.quantity, 0) /
+        100
+      ).toFixed(2);
     } else {
       cartTotal = 0;
     }
@@ -43,25 +59,37 @@
         });
       }
     }
-    notifications.success('Quantity updated!', 3000)
-  }
-
-  function testies() {
-    console.log("wrking");
+    notifications.success('Quantity updated!', 3000);
   }
 
   const updateLineItems = () => {
     localStorage.setItem('lineitems', JSON.stringify($lineItems));
     origCartStr.set(JSON.stringify($lineItems));
     console.log('Cart updated!');
-    // notifications.success('Cart updated!', 3000)
-    notifications.confirm('Confirm working!', 1000000000, () => console.log("this is working"))
+    notifications.success('Cart updated!', 3000);
+  };
+
+  let confirmDelete = false;
+  let deleteID = '';
+  const handleDelete = (id) => {
+    confirmDelete = !confirmDelete;
+    deleteID = id;
+  };
+
+  const deleteLineItem = (deleteID) => {
+    lineItems.update((v) => {
+      return v.filter((obj) => obj.id !== deleteID);
+    });
+    localStorage.setItem("lineitems", JSON.stringify($lineItems));
+    confirmDelete = false;
   };
 </script>
 
 {#if $lineItems.length > 0}
   <div class="btn btn-primary btn-success my-4 w-full p-0">
-    <a href="/checkout" class="no-underline flex w-full h-full items-center justify-center">Checkout</a>
+    <a href="/checkout" class="flex h-full w-full items-center justify-center no-underline"
+      >Checkout</a
+    >
   </div>
   <h2 class="text-center text-xl">
     Cart Subtotal: ${cartTotal}
@@ -74,7 +102,12 @@
       <div class="grid grid-cols-2">
         <div><img class="h-[100px]" src={item.thumbnail} alt="" /></div>
         <div class="relative">
-          <div class="btn btn-sm btn-warning absolute right-0 top-0 rounded-none">X</div>
+          <div
+            on:click={() => handleDelete(item.id)}
+            class="btn btn-sm btn-warning absolute right-0 top-0 rounded-none"
+          >
+            X
+          </div>
           <div class="absolute bottom-0">
             <p>Price: ${(item.subtotal / 100).toFixed(2)}</p>
             <p>Subtotal: ${((item.subtotal * item.quantity) / 100).toFixed(2)}</p>
@@ -121,4 +154,16 @@
   {/if}
 {:else}
   No Cart Yet!
+{/if}
+{#if confirmDelete}
+  <div
+    transition:fly={{ duration: 200, y: 200, easing: backOut }}
+    id="deleteModal"
+    class="bg-primary text-primary-content fixed top-[33%] left-[33%] row-span-2 grid h-[33%] w-[33%] items-center justify-center rounded text-center text-2xl"
+  >
+    <div>Please confirm that you would like to delete this?</div>
+    <div>
+      <div on:click={() => deleteLineItem(deleteID)} class="btn btn-secondary">Confirm</div>
+    </div>
+  </div>
 {/if}
