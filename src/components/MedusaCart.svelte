@@ -1,16 +1,5 @@
 <script>
-  import {
-    backInOut,
-    backOut,
-    bounceInOut,
-    bounceOut,
-    circInOut,
-    circOut,
-    cubicIn,
-    cubicInOut,
-    elasticInOut,
-    elasticOut
-  } from 'svelte/easing';
+  import { backOut } from 'svelte/easing';
   import { fly } from 'svelte/transition';
   import { lineItems, origCartStr } from '$lib/store';
   import { browser } from '$app/environment';
@@ -80,7 +69,8 @@
     lineItems.update((v) => {
       return v.filter((obj) => obj.id !== deleteID);
     });
-    localStorage.setItem("lineitems", JSON.stringify($lineItems));
+    localStorage.setItem('lineitems', JSON.stringify($lineItems));
+    origCartStr.set(JSON.stringify($lineItems));
     confirmDelete = false;
   };
 </script>

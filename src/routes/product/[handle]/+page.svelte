@@ -39,6 +39,7 @@
     }
   }
 
+  // work on this to fix adding same item 
   const addItemWithQuantity = (newItem) => {
     const existingItem = $lineItems.find((item) => item.id === newItem.id);
 
