@@ -146,7 +146,7 @@
                 </div>
               </div>
             </div>
-            <div class:open={dumpCart} class="cartdiv h-0 overflow-hidden overflow-y-scroll">
+            <div class:open={dumpCart} class="cartdiv h-0 overflow-hidden overflow-y-scroll relative">
               <MedusaCart />
             </div>
           <li>

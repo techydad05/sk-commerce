@@ -4,6 +4,7 @@
   import Icons from '$components/Icons.svelte';
   import { lineItems, origCartStr } from '$lib/store';
   import { browser } from '$app/environment';
+  import { notifications } from '$utils/notifications';
 
   /** @type {import('./$types').PageData} */
   export let data;
@@ -52,6 +53,7 @@
     ];
     localStorage.setItem('lineitems', JSON.stringify($lineItems));
     origCartStr.set(JSON.stringify($lineItems));
+    notifications.success('Item added to cart!', 3000)
   };
 </script>
 

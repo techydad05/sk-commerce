@@ -9,6 +9,7 @@
   import { onMount } from 'svelte';
   import { createMedusaCart } from '$utils/medusa';
   import { lineItems } from '$lib/store';
+  import Toast from '$components/Toast.svelte';
 
   let cartId;
   let checkoutUrl;
@@ -124,3 +125,4 @@
     <Footer />
   </div>
 </main>
+<Toast/>
