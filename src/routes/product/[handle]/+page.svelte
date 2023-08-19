@@ -179,7 +179,7 @@
             </div>
           {/if}
           <button
-            on:click={() => addItemWithQuantity(product, quantity)}
+            on:click={() => addToCart(product, quantity)}
             class="bg-light mt-6 flex w-full items-center justify-center p-4 text-sm uppercase tracking-wide text-black opacity-90 hover:opacity-100"
           >
             <span>Add To Cart</span>
