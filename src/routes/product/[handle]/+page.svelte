@@ -19,7 +19,7 @@
 
   $: highlightedImageSrc = product?.images[currentImageIndex].url;
 
-  // $: currentLineItem = $lineItems.find((item) => item.id === product.variants[0].id);
+  $: currentLineItem = $lineItems.find((item) => item.id === product.variants[0].id);
 
   product?.options.forEach((option) => {
     selectedOptions = { ...selectedOptions, [option.name]: option.values[0] };
@@ -42,35 +42,48 @@
   }
 
   // work on this to fix adding same item
-  // const addItemWithQuantity = (newItem, quantity) => {
-  //   const existingItem = $lineItems.find((item) => item.id === newItem.variants[0].id);
-  //   if (existingItem) {
-  //     existingItem.quantity += Number.parseInt(quantity);
-  //   } else {
-  //     $lineItems.push(newItem);
-  //   }
-  //   console.log($lineItems);
-  //   lineItems.set($lineItems);
-  //   // return $lineItems;
-  // };
+  const addItemWithQuantity = (newItem, quantity) => {
+    const existingItem = $lineItems.find((item) => item.id === newItem.variants[0].id);
+    if (existingItem) {
+      existingItem.quantity += Number.parseInt(quantity);
+    } else {
+      $lineItems = [
+        ...$lineItems,
+        {
+          id: newItem.variants[0].id,
+          title: newItem.title,
+          amount: newItem.variants[0].prices[0].amount,
+          quantity,
+          thumbnail: newItem.thumbnail,
+          subtotal: newItem.variants[0].prices[0].amount * quantity
+        }
+      ];
+    }
+    lineItems.set($lineItems);
+    localStorage.setItem('lineitems', JSON.stringify($lineItems));
+    console.log($lineItems);
+    // return $lineItems;
+  };
 
   const addToCart = (item, quantity) => {
+    addItemWithQuantity(item, quantity);
     // const testArr = addItemWithQuantity(item);
     // console.log(testArr);
-    $lineItems = [
-      ...$lineItems,
-      {
-        id: item.variants[0].id,
-        title: item.title,
-        amount: item.variants[0].prices[0].amount,
-        quantity,
-        thumbnail: item.thumbnail,
-        subtotal: item.variants[0].prices[0].amount * quantity
-      }
-    ];
 
-    localStorage.setItem('lineitems', JSON.stringify($lineItems));
-    origCartStr.set(JSON.stringify($lineItems));
+    // $lineItems = [
+    //   ...$lineItems,
+    //   {
+    //     id: item.variants[0].id,
+    //     title: item.title,
+    //     amount: item.variants[0].prices[0].amount,
+    //     quantity,
+    //     thumbnail: item.thumbnail,
+    //     subtotal: item.variants[0].prices[0].amount * quantity
+    //   }
+    // ];
+
+    // localStorage.setItem('lineitems', JSON.stringify($lineItems));
+    // origCartStr.set(JSON.stringify($lineItems));
     notifications.success('Item added to cart!', 3000);
   };
 </script>
@@ -171,13 +184,13 @@
             type="number"
             on:change={(e) => (quantity = e.target.value)}
           />
-          <!-- {#if currentLineItem}
+          {#if currentLineItem}
             <div class="fixed top-[56px] right-[62px] z-[9999]">
-              <div class="badge badge-primary badge-lg" alt="testies">
+              <div class="badge badge-primary badge-lg" title="Number of these in cart.">
                 {currentLineItem?.quantity}
               </div>
             </div>
-          {/if} -->
+          {/if}
           <button
             on:click={() => addToCart(product, quantity)}
             class="bg-light mt-6 flex w-full items-center justify-center p-4 text-sm uppercase tracking-wide text-black opacity-90 hover:opacity-100"

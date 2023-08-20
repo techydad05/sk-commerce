@@ -1,5 +1,5 @@
 import Medusa from "@medusajs/medusa-js";
-import { collections, productTags, productsByTag } from "$lib/store";
+import { collections, products, productTags, productsByTag } from "$lib/store";
 let baseUrl = "http://192.168.1.42:9002";
 const medusa = new Medusa({ baseUrl: baseUrl, maxRetries: 3 });
 
@@ -18,6 +18,14 @@ export async function createMedusaCart(cartID) {
       return res.cart;
     })
   }
+}
+
+export const getAllProducts = async () => {
+  return medusa.products.list().then((res) => {
+    products.set(res.products);
+    console.log(res);
+    return res;
+  })
 }
 
 export const getCollections = async () => {

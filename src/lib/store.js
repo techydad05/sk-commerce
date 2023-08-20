@@ -4,3 +4,4 @@ export const collections = writable([]);
 export const productTags = writable([]);
 export const productsByTag = writable([]);
 export const origCartStr = writable('');
+export const products = writable([]);

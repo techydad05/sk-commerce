@@ -6,15 +6,17 @@
   export let data;
   $: search = $page.url.searchParams.get('q');
 
-  $: displayedProducts = search
-    ? data.body.allProducts.edges.filter((item) => {
-        return item.node.title.toLowerCase().includes(search.toLowerCase());
-      })
-    : data.body.allProducts.edges;
+  // $: displayedProducts = search
+  //   ? data.body.allProducts.edges.filter((item) => {
+  //       return item.node.title.toLowerCase().includes(search.toLowerCase());
+  //     })
+  //   : data.body.allProducts.edges;
+
 </script>
 
 <div>
-  <ul class="grid grid-flow-row gap-4 sm:grid-cols-2 md:grid-cols-3">
+  {JSON.stringify(data)}
+  <!-- <ul class="grid grid-flow-row gap-4 sm:grid-cols-2 md:grid-cols-3">
     {#each displayedProducts as product, i (product.node.id)}
       <li>
         <div class="group relative block aspect-square overflow-hidden bg-dark">
@@ -30,5 +32,5 @@
     {:else}
       <p>No products :(</p>
     {/each}
-  </ul>
+  </ul> -->
 </div>
