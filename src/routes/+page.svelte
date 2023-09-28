@@ -25,11 +25,16 @@
 
 <main>
   <section>
-    {#if homeProduct}
+    <section>
+      {#if featuredProducts}
+        <Carousel items={featuredProducts} />
+      {/if}
+    </section>
+    <!-- {#if homeProduct}
       <DaisyHero featured product={homeProduct} />
     {:else}
       <DaisyHero figure="https://picsum.photos/500/650" />
-    {/if}
+    {/if} -->
     {#if featuredProducts}
       <div class="lg:h-[90vh]">
         {#if featuredProducts.length >= 3}
@@ -40,11 +45,6 @@
           </div>
         {/if}
       </div>
-    {/if}
-  </section>
-  <section>
-    {#if featuredProducts}
-      <Carousel items={featuredProducts} />
     {/if}
   </section>
   <section>

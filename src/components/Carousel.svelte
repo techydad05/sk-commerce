@@ -1,4 +1,31 @@
 <script>
+  import Carousel from 'svelte-carousel';
+  import { browser } from '$app/environment';
+  export let items;
+
+  let carousel; // for calling methods of the carousel instance
+
+  // const handleNextClick = () => {
+  // };
+  
+
+  // todo: work on adding this as a prop on the component
+  setInterval(() => {
+    carousel.goToNext();
+  }, 3000);
+</script>
+
+{#if browser}
+  <Carousel bind:this={carousel}>
+    {#each items as product}
+      <div>
+        <img src={product.thumbnail} alt="" width="100%">
+      </div>
+    {/each}
+  </Carousel>
+{/if}
+
+<!-- <script>
   export let items;
 </script>
 
@@ -55,4 +82,4 @@
     -webkit-animation: scroll 40s linear infinite;
     animation: scroll 40s linear infinite;
   }
-</style>
+</style> -->

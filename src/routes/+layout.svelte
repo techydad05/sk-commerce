@@ -118,9 +118,9 @@
       bind:loading
     />
   {/if} -->
-  <MedusaHeader menuItems={collections} bind:new_theme={theme} />
   <!-- <Header on:openCart={openCart} /> -->
-  <div class="min-h-screen overflow-scroll pt-[88px]">
+  <MedusaHeader menuItems={collections} bind:new_theme={theme} />
+  <div class="min-h-screen pt-[88px]">
     <slot />
     <Footer />
   </div>

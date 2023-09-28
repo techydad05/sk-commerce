@@ -8,7 +8,7 @@ const config = {
     alias: {
       $components: 'src/components',
       $utils: 'src/utils'
-    }
+    },
   },
   preprocess: [
     preprocess({

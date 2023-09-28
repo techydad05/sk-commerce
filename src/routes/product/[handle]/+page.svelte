@@ -41,8 +41,7 @@
     }
   }
 
-  // work on this to fix adding same item
-  const addItemWithQuantity = (newItem, quantity) => {
+  const addToCart = (newItem, quantity) => {
     const existingItem = $lineItems.find((item) => item.id === newItem.variants[0].id);
     if (existingItem) {
       existingItem.quantity += Number.parseInt(quantity);
@@ -62,30 +61,13 @@
     lineItems.set($lineItems);
     localStorage.setItem('lineitems', JSON.stringify($lineItems));
     console.log($lineItems);
-    // return $lineItems;
-  };
-
-  const addToCart = (item, quantity) => {
-    addItemWithQuantity(item, quantity);
-    // const testArr = addItemWithQuantity(item);
-    // console.log(testArr);
-
-    // $lineItems = [
-    //   ...$lineItems,
-    //   {
-    //     id: item.variants[0].id,
-    //     title: item.title,
-    //     amount: item.variants[0].prices[0].amount,
-    //     quantity,
-    //     thumbnail: item.thumbnail,
-    //     subtotal: item.variants[0].prices[0].amount * quantity
-    //   }
-    // ];
-
-    // localStorage.setItem('lineitems', JSON.stringify($lineItems));
-    // origCartStr.set(JSON.stringify($lineItems));
     notifications.success('Item added to cart!', 3000);
   };
+
+  const addReview = () => {
+    
+  }
+
 </script>
 
 <svelte:head>
@@ -136,10 +118,10 @@
         </div>
       </div>
       <div>
-        <div class="h-full p-6 md:w-1/3">
+        <div class="h-full p-6">
           {#each product.options as option}
             <div class="mb-8">
-              <div class="mb-4 text-sm uppercase tracking-wide">{option.title}</div>
+              <div class="mb-4 text-lg uppercase tracking-wide">{option.title}</div>
               <div class="flex">
                 {#each option.values as value}
                   <button
@@ -157,9 +139,10 @@
               </div>
             </div>
           {/each}
-          <p class="text-sm">{product.description}</p>
+          <p class="text-xl">{product.description}</p>
           <div class="mt-8 flex items-center justify-between">
-            <div class="flex items-center">
+            <div on:click={() => addReview()} class="btn btn-primary">Add Review</div>
+            <!-- <div class="flex items-center">
               <div class="mr-1">
                 <Icons type="star" />
               </div>
@@ -176,7 +159,7 @@
                 <Icons type="star" />
               </div>
             </div>
-            <div class="text-sm opacity-50">36 Reviews **make this work</div>
+            <div class="text-sm opacity-50">36 Reviews **make this work</div> -->
           </div>
           <input
             value={quantity}

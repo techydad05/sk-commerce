@@ -1,4 +1,5 @@
 <script>
+
   // this is what will end up being components that are reusable and dynamic
   export let figure = null;
   export let figureReverse = null;
