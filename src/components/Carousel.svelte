@@ -1,6 +1,7 @@
 <script>
   import Carousel from 'svelte-carousel';
   import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
   export let items;
 
   let carousel; // for calling methods of the carousel instance
@@ -10,9 +11,11 @@
   
 
   // todo: work on adding this as a prop on the component
-  setInterval(() => {
-    carousel.goToNext();
-  }, 3000);
+  onMount(() => {
+    setInterval(() => {
+      carousel.goToNext();
+    }, 3000);
+  })
 </script>
 
 {#if browser}
