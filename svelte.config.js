@@ -9,6 +9,7 @@ const config = {
       $components: 'src/components',
       $utils: 'src/utils'
     },
+    appDir: './app'
   },
   preprocess: [
     preprocess({
