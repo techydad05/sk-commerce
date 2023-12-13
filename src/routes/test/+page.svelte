@@ -3,9 +3,9 @@
   import { onMount } from 'svelte';
 
   // for server: npm install eventsource --save
-  import EventSource from '$utils/eventsource.min.js';
+  // import EventSource from '$utils/eventsource.min.js';
   
-  global.EventSource = EventSource;
+  // global.EventSource = EventSource;
   const pb = new PocketBase('http://192.168.1.42:5174');
 
   onMount(async () => {
