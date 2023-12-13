@@ -9,7 +9,7 @@ const config = {
       $components: 'src/components',
       $utils: 'src/utils'
     },
-    appDir: './app'
+    appDir: 'app'
   },
   preprocess: [
     preprocess({
