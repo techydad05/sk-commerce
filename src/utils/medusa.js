@@ -1,6 +1,6 @@
 import Medusa from "@medusajs/medusa-js";
 import { collections, products, productTags, productsByTag } from "$lib/store";
-let baseUrl = "http://192.168.1.42:9002";
+let baseUrl = "http://192.168.1.42:9000";
 // let baseUrl = "http://192.168.1.42:9002";
 const medusa = new Medusa({ baseUrl: baseUrl, maxRetries: 3 });
 
